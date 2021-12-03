@@ -20,13 +20,13 @@ It enables several widely used functionalities by default:
 3. inject necessary dependences at `/cmd/worker/worker.go` and pass them into the handler
 4. build and run `./go-boilerplate -f YOUR_KEYSTORE_FILE worker [health check port]`
 
-### 3. handle messages
+### 3. handling messages
 
 1. implement the handlers at `/messages`
 2. inject necessary dependences at `/cmd/worker/worker.go` and pass them into the handler `messenger`
 3. call the handlers at `/worker/messenger/messenger.go`
 
-### 4. handle snapshots
+### 4. handling snapshots
 
 1. put your code at `/worker/syncer/syncer.go:run` to handle the snapshots you need.
 2. inject necessary dependences at `/cmd/worker/worker.go` and pass them into the handler `syncer`
@@ -41,15 +41,19 @@ It enables several widely used functionalities by default:
 
 feel free to remove any functionality you do not need:
 
-1. to sync network snapshots
+1. syncer
   - `/cmd/worker` - the entry command to start workers
   - `/worker/syncer` - a worker to sync snapshots from Mixin Network. 
   - `/core` - database model definitions of snapshots and assets
   - `/store` - database stores of snapshots and assets
-2. to start a httpd
+2. httpd
   - `/cmd/httpd` - the entry command to start a httpd server
   - `/handler` - the HTTP requset handlers
-3. to migrate database
+3. messenger
+  - `/cmd/worker` - the entry command to start workers
+  - `/worker/messenger` - a worker to handle incoming messages
+  - `/message/` - the handlers to handle messages
+4. migrater
   - `/cmd/migrate` - the entry command to migrate database
-4. an echo command
+5. the echo command
   - `/cmd/echo` - a simple command to show you how to write a command
