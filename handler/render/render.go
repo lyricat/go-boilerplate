@@ -21,6 +21,12 @@ func Text(w http.ResponseWriter, t string) {
 	_, _ = w.Write([]byte(t))
 }
 
+func Error(w http.ResponseWriter, status int, err error) {
+	w.Header().Set("Content-Type", "application/text")
+	w.WriteHeader(status)
+	_, _ = w.Write([]byte(err.Error()))
+}
+
 func Html(w http.ResponseWriter, t string) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)

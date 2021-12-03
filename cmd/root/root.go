@@ -9,7 +9,10 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/lyricat/go-boilerplate/cmd/echo"
 	"github.com/lyricat/go-boilerplate/cmd/httpd"
+	"github.com/lyricat/go-boilerplate/cmd/migrate"
+	"github.com/lyricat/go-boilerplate/cmd/worker"
 	"github.com/lyricat/go-boilerplate/cmdutil"
+	"github.com/lyricat/go-boilerplate/config"
 	"github.com/lyricat/go-boilerplate/session"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,7 +37,6 @@ func NewCmdRoot(version string) *cobra.Command {
 			s := session.From(cmd.Context())
 
 			v := viper.New()
-			v.SetConfigType("json")
 			v.SetConfigType("yaml")
 
 			if opt.KeystoreFile != "" {
@@ -49,7 +51,7 @@ func NewCmdRoot(version string) *cobra.Command {
 
 			if values := v.AllSettings(); len(values) > 0 {
 				b, _ := jsoniter.Marshal(values)
-				store, pin, err := cmdutil.DecodeKeystore(b)
+				keystore, pin, err := cmdutil.DecodeKeystore(b)
 				if err != nil {
 					return fmt.Errorf("decode keystore failed: %w", err)
 				}
@@ -58,7 +60,7 @@ func NewCmdRoot(version string) *cobra.Command {
 					pin = opt.Pin
 				}
 
-				s.WithKeystore(store)
+				s.WithKeystore(keystore)
 
 				if pin != "" {
 					s.WithPin(pin)
@@ -86,13 +88,18 @@ func NewCmdRoot(version string) *cobra.Command {
 		},
 	}
 
+	// load config
+	config.InitConfig()
+
 	cmd.PersistentFlags().StringVar(&opt.host, "host", mixin.DefaultApiHost, "custom api host")
-	cmd.PersistentFlags().StringVarP(&opt.KeystoreFile, "file", "f", "", "keystore file path (default is $HOME/.mixin-cli/keystore.json)")
+	cmd.PersistentFlags().StringVarP(&opt.KeystoreFile, "file", "f", "", "keystore file path")
 	cmd.PersistentFlags().StringVar(&opt.accessToken, "token", "", "custom access token")
 	cmd.PersistentFlags().StringVar(&opt.Pin, "pin", "", "raw pin")
 
 	cmd.AddCommand(httpd.NewCmdHttpd())
 	cmd.AddCommand(echo.NewCmdEcho())
+	cmd.AddCommand(migrate.NewCmdMigrate())
+	cmd.AddCommand(worker.NewCmdWorker())
 
 	return cmd
 }

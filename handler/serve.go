@@ -1,17 +1,19 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/lyricat/go-boilerplate/handler/asset"
 	"github.com/lyricat/go-boilerplate/handler/echo"
 	"github.com/lyricat/go-boilerplate/handler/render"
+	"github.com/lyricat/go-boilerplate/store/wallet"
 
 	"github.com/go-chi/chi"
-	"github.com/twitchtv/twirp"
 )
 
-func New(cfg Config) Server {
-	return Server{cfg: cfg}
+func New(cfg Config, wallets *wallet.WalletStore) Server {
+	return Server{cfg: cfg, wallets: wallets}
 }
 
 type (
@@ -19,7 +21,8 @@ type (
 	}
 
 	Server struct {
-		cfg Config
+		cfg     Config
+		wallets *wallet.WalletStore
 	}
 )
 
@@ -28,26 +31,18 @@ func (s Server) HandleRest() http.Handler {
 	r.Use(render.WrapResponse(true))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		render.Error(w, twirp.NotFoundError("not found"))
+		render.Error(w, http.StatusNotFound, fmt.Errorf("not found"))
 	})
 
 	r.Route("/echo", func(r chi.Router) {
-		r.Get("/{msg}", echo.HandleGet())
-		r.Post("/", echo.HandlePost())
+		r.Get("/{msg}", echo.Get())
+		r.Post("/", echo.Post())
+	})
+
+	r.Route("/assets", func(r chi.Router) {
+		r.Get("/", asset.GetAssets(s.wallets))
+		r.Get("/{assetID}", asset.GetAsset(s.wallets))
 	})
 
 	return r
-}
-
-func resetRoutePath(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		if c := chi.RouteContext(ctx); c != nil {
-			c.RoutePath = r.URL.Path
-		}
-
-		next.ServeHTTP(w, r)
-	}
-
-	return http.HandlerFunc(fn)
 }

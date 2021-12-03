@@ -1,0 +1,8 @@
+db:
+  database: "main"
+  dialect: "sqlite3"
+  host: "./database.db"
+  password: "PASSWORD"
+  port: 3306
+  read_host: ""
+  user: "USER"
