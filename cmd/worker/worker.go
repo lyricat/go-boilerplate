@@ -15,6 +15,7 @@ import (
 	"github.com/lyricat/go-boilerplate/session"
 	"github.com/lyricat/go-boilerplate/store/wallet"
 	"github.com/lyricat/go-boilerplate/worker"
+	"github.com/lyricat/go-boilerplate/worker/messenger"
 	"github.com/lyricat/go-boilerplate/worker/syncer"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
@@ -24,7 +25,7 @@ import (
 
 func NewCmdWorker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "worker",
+		Use:   "worker [health check port]",
 		Short: "run workers",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
@@ -54,11 +55,15 @@ func NewCmdWorker() *cobra.Command {
 			wallets := wallet.New(database, client, wallet.Config{Pin: pin})
 
 			workers := []worker.Worker{
+				// syncer
 				syncer.New(syncer.Config{
 					ClientID: keystore.ClientID,
 				}, property, wallets),
+				// messenger
+				messenger.New(client),
 			}
 
+			// run them all
 			g, ctx := errgroup.WithContext(ctx)
 			for idx := range workers {
 				w := workers[idx]
@@ -67,8 +72,8 @@ func NewCmdWorker() *cobra.Command {
 				})
 			}
 
+			// start the health check server
 			g.Go(func() error {
-				// worker api
 				mux := chi.NewMux()
 				mux.Use(middleware.Recoverer)
 				mux.Use(middleware.StripSlashes)
@@ -77,12 +82,11 @@ func NewCmdWorker() *cobra.Command {
 				mux.Use(middleware.Logger)
 
 				{
-					// hc
+					// hc for workers
 					mux.Mount("/hc", hc.Handle(cmd.Version))
 				}
 
 				// launch server
-
 				port := 8081
 				if len(args) > 0 {
 					port, err = strconv.Atoi(args[0])

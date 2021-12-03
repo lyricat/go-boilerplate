@@ -50,7 +50,7 @@ func New(
 }
 
 func (w *Worker) Run(ctx context.Context) error {
-	log := logger.FromContext(ctx).WithField("worker", "cashier")
+	log := logger.FromContext(ctx).WithField("worker", "syncer")
 	ctx = logger.WithContext(ctx, log)
 
 	dur := time.Millisecond
