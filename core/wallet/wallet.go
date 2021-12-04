@@ -16,7 +16,7 @@ type (
 	Asset struct {
 		AssetID string          `gorm:"primaryKey" json:"asset_id"`
 		Name    string          `json:"name"`
-		Symbol  string          `gorm:"index:idx_symbol;unique" json:"symbol"`
+		Symbol  string          `gorm:"index:idx_symbol" json:"symbol"`
 		Logo    string          `json:"icon_url"`
 		Balance decimal.Decimal `sql:"type:decimal(64,8)" json:"balance"`
 	}
