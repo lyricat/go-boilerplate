@@ -2,6 +2,14 @@
 
 This is a golang boilerplate for Mixin Bot.
 
+run 
+
+```bash
+./go-boilerplate -f YOUR_KEYSTORE_FILE help
+```
+
+to see the help.
+
 It enables several widely used functionalities by default:
 
 ## Getting Started

@@ -88,10 +88,10 @@ func (s *WalletStore) GetAssets(ctx context.Context) ([]*core.Asset, error) {
 	return assets, err
 }
 
-func (s *WalletStore) GetAsset(ctx context.Context, assetID string) (core.Asset, error) {
+func (s *WalletStore) GetAsset(ctx context.Context, assetID string) (*core.Asset, error) {
 	var asset core.Asset
 	err := s.db.View().Where("asset_id = ?", assetID).Find(&asset).Error
-	return asset, err
+	return &asset, err
 }
 
 func (s *WalletStore) SetAssets(ctx context.Context, assets []*core.Asset) error {

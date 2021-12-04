@@ -8,12 +8,6 @@ import (
 	"github.com/lyricat/go-boilerplate/core/wallet"
 )
 
-func (s *WalletStore) LoadAssets(ctx context.Context) ([]*wallet.Asset, error) {
-	var assets []*wallet.Asset
-	err := s.db.View().Order("created_at DESC").Find(&assets).Error
-	return assets, err
-}
-
 func (s *WalletStore) PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*wallet.Snapshot, error) {
 	snapshots, err := s.client.ReadNetworkSnapshots(ctx, "", offset, "ASC", limit)
 	if err != nil {
