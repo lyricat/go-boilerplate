@@ -26,7 +26,7 @@ type (
 	Worker struct {
 		cfg        Config
 		properties property.Store
-		wallets    *core.WalletStore
+		wallets    core.WalletStore
 		cache      *cache.Cache
 	}
 )
@@ -34,7 +34,7 @@ type (
 func New(
 	cfg Config,
 	properties property.Store,
-	wallets *core.WalletStore,
+	wallets core.WalletStore,
 ) *Worker {
 	if _, err := govalidator.ValidateStruct(cfg); err != nil {
 		panic(err)
