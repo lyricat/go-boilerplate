@@ -8,8 +8,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/fox-one/pkg/logger"
 	"github.com/fox-one/pkg/property"
-	WalletCore "github.com/lyricat/go-boilerplate/core/wallet"
-	"github.com/lyricat/go-boilerplate/store/wallet"
+	"github.com/lyricat/go-boilerplate/core"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -27,7 +26,7 @@ type (
 	Worker struct {
 		cfg        Config
 		properties property.Store
-		wallets    *wallet.WalletStore
+		wallets    *core.WalletStore
 		cache      *cache.Cache
 	}
 )
@@ -35,7 +34,7 @@ type (
 func New(
 	cfg Config,
 	properties property.Store,
-	wallets *wallet.WalletStore,
+	wallets *core.WalletStore,
 ) *Worker {
 	if _, err := govalidator.ValidateStruct(cfg); err != nil {
 		panic(err)
@@ -83,7 +82,7 @@ func (w *Worker) run(ctx context.Context) error {
 
 	const LIMIT = 500
 
-	var snapshots []*WalletCore.Snapshot
+	var snapshots []*core.Snapshot
 
 	{
 		items, err := w.wallets.PollSnapshots(ctx, offset, LIMIT)

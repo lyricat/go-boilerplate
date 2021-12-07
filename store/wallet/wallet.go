@@ -6,7 +6,7 @@ import (
 
 	"github.com/fox-one/mixin-sdk-go"
 	"github.com/fox-one/pkg/store/db"
-	core "github.com/lyricat/go-boilerplate/core/wallet"
+	core "github.com/lyricat/go-boilerplate/core"
 )
 
 func init() {
@@ -42,12 +42,6 @@ type WalletStore struct {
 	client *mixin.Client
 	cfg    Config
 }
-
-// type Store struct {
-// 	db     *db.DB
-// 	client *mixin.Client
-// 	cfg    core.Config
-// }
 
 func (s *WalletStore) GetSnapshots(ctx context.Context, userID string, from time.Time, limit int, assetID string) ([]*core.Snapshot, error) {
 	var ss []*core.Snapshot

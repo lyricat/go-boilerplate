@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/fox-one/pkg/logger"
-	"github.com/lyricat/go-boilerplate/core/wallet"
+	"github.com/lyricat/go-boilerplate/core"
 )
 
-func (w *Worker) ProcessSnapshots(ctx context.Context, snapshots []*wallet.Snapshot) error {
+func (w *Worker) ProcessSnapshots(ctx context.Context, snapshots []*core.Snapshot) error {
 	for _, snapshot := range snapshots {
 		err := w.ProcessSnapshot(ctx, snapshot)
 		if err != nil {
@@ -17,7 +17,7 @@ func (w *Worker) ProcessSnapshots(ctx context.Context, snapshots []*wallet.Snaps
 	return nil
 }
 
-func (w *Worker) ProcessSnapshot(ctx context.Context, snapshot *wallet.Snapshot) error {
+func (w *Worker) ProcessSnapshot(ctx context.Context, snapshot *core.Snapshot) error {
 	log := logger.FromContext(ctx)
 	if err := w.PersistentSnapshot(ctx, snapshot); err != nil {
 		log.Warn("failed to persistent snapshot", err)
@@ -27,8 +27,8 @@ func (w *Worker) ProcessSnapshot(ctx context.Context, snapshot *wallet.Snapshot)
 	return nil
 }
 
-func (w *Worker) PersistentSnapshot(ctx context.Context, snapshot *wallet.Snapshot) (err error) {
-	if err := w.wallets.SetSnapshots(ctx, []*wallet.Snapshot{snapshot}); err != nil {
+func (w *Worker) PersistentSnapshot(ctx context.Context, snapshot *core.Snapshot) (err error) {
+	if err := w.wallets.SetSnapshots(ctx, []*core.Snapshot{snapshot}); err != nil {
 		return err
 	}
 	return nil

@@ -1,6 +1,7 @@
-package wallet
+package core
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -36,5 +37,15 @@ type (
 		AssetID         string          `gorm:"required" json:"asset_id,omitempty"`
 		Amount          decimal.Decimal `sql:"type:decimal(64,8)" gorm:"required" json:"amount,omitempty"`
 		Memo            string          `gorm:"required,default:''" json:"memo,omitempty"`
+	}
+
+	WalletStore interface {
+		GetSnapshots(ctx context.Context, userID string, from time.Time, limit int, assetID string) ([]*Snapshot, error)
+		GetSnapshot(ctx context.Context, snapshotID string) (Snapshot, error)
+		SetSnapshots(ctx context.Context, snapshots []*Snapshot) error
+		GetAssets(ctx context.Context) ([]*Asset, error)
+		GetAsset(ctx context.Context, assetID string) (*Asset, error)
+		SetAssets(ctx context.Context, assets []*Asset) error
+		PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*Snapshot, error)
 	}
 )

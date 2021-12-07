@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/fox-one/mixin-sdk-go"
-	"github.com/lyricat/go-boilerplate/core/wallet"
+	core "github.com/lyricat/go-boilerplate/core"
 )
 
-func (s *WalletStore) PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*wallet.Snapshot, error) {
+func (s *WalletStore) PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*core.Snapshot, error) {
 	snapshots, err := s.client.ReadNetworkSnapshots(ctx, "", offset, "ASC", limit)
 	if err != nil {
 		return nil, err
@@ -17,10 +17,10 @@ func (s *WalletStore) PollSnapshots(ctx context.Context, offset time.Time, limit
 	return convertSnapshots(snapshots), nil
 }
 
-func convertSnapshots(items []*mixin.Snapshot) []*wallet.Snapshot {
-	var snapshots = make([]*wallet.Snapshot, len(items))
+func convertSnapshots(items []*mixin.Snapshot) []*core.Snapshot {
+	var snapshots = make([]*core.Snapshot, len(items))
 	for i, s := range items {
-		snapshots[i] = &wallet.Snapshot{
+		snapshots[i] = &core.Snapshot{
 			CreatedAt:       s.CreatedAt,
 			SnapshotID:      s.SnapshotID,
 			UserID:          s.UserID,
