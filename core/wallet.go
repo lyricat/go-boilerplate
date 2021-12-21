@@ -15,28 +15,32 @@ var (
 
 type (
 	Asset struct {
-		AssetID string          `gorm:"primaryKey" json:"asset_id"`
-		Name    string          `json:"name"`
-		Symbol  string          `gorm:"index:idx_symbol" json:"symbol"`
-		Logo    string          `json:"icon_url"`
-		Balance decimal.Decimal `sql:"type:decimal(64,8)" json:"balance"`
+		AssetID   string          `sql:"type:char(36)" gorm:"primaryKey" json:"asset_id"`
+		Name      string          `sql:"type:varchar(64)" json:"name"`
+		ChainID   string          `sql:"type:char(36)" json:"chain_id"`
+		PriceUSD  decimal.Decimal `sql:"type:decimal(64,8)" json:"price_usd"`
+		PriceBTC  decimal.Decimal `sql:"type:decimal(64,8)" json:"price_btc"`
+		Symbol    string          `sql:"type:varchar(32)" gorm:"index:idx_symbol" json:"symbol"`
+		IconURL   string          `sql:"type:varchar(1024)" json:"icon_url"`
+		CreatedAt time.Time       `json:"created_at"`
+		UpdatedAt time.Time       `json:"updated_at"`
 	}
 
 	Snapshot struct {
 		ID              uint64          `gorm:"primaryKey" json:"id,omitempty"`
-		SnapshotID      string          `gorm:"required,index:idx_snapshots_snapshot_id;unique" json:"snapshot_id,omitempty"`
-		TraceID         string          `gorm:"required" json:"trace_id,omitempty"`
-		Source          string          `gorm:"required" json:"source,omitempty"`
-		TransactionHash string          `gorm:"required" json:"transaction_hash,omitempty"`
-		Receiver        string          `gorm:"required" json:"receiver,omitempty"`
-		Sender          string          `gorm:"required" json:"sender,omitempty"`
-		Type            string          `gorm:"required" json:"type,omitempty"`
-		CreatedAt       time.Time       `gorm:"required" json:"created_at,omitempty"`
-		UserID          string          `gorm:"required" json:"user_id,omitempty"`
-		OpponentID      string          `gorm:"required" json:"opponent_id,omitempty"`
-		AssetID         string          `gorm:"required" json:"asset_id,omitempty"`
-		Amount          decimal.Decimal `sql:"type:decimal(64,8)" gorm:"required" json:"amount,omitempty"`
-		Memo            string          `gorm:"required,default:''" json:"memo,omitempty"`
+		SnapshotID      string          `sql:"type:char(36)" gorm:"index:idx_snapshots_snapshot_id;unique" json:"snapshot_id,omitempty"`
+		TraceID         string          `sql:"type:char(36)" json:"trace_id,omitempty"`
+		Source          string          `sql:"type:varchar(32)" json:"source,omitempty"`
+		TransactionHash string          `sql:"type:varchar(64)" json:"transaction_hash,omitempty"`
+		Receiver        string          `sql:"type:varchar(256)" json:"receiver,omitempty"`
+		Sender          string          `sql:"type:varchar(256)" json:"sender,omitempty"`
+		Type            string          `sql:"type:varchar(32)" json:"type,omitempty"`
+		CreatedAt       time.Time       `json:"created_at,omitempty"`
+		UserID          string          `sql:"type:char(36)" json:"user_id,omitempty"`
+		OpponentID      string          `sql:"type:char(36)" json:"opponent_id,omitempty"`
+		AssetID         string          `sql:"type:char(36)" json:"asset_id,omitempty"`
+		Amount          decimal.Decimal `sql:"type:decimal(64,8)" json:"amount,omitempty"`
+		Memo            string          `sql:"type:varchar(256)" gorm:"default:''" json:"memo,omitempty"`
 	}
 
 	WalletStore interface {
