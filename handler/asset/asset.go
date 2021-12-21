@@ -5,11 +5,11 @@ import (
 
 	"github.com/fox-one/pkg/store/db"
 	"github.com/go-chi/chi"
+	"github.com/lyricat/go-boilerplate/core"
 	"github.com/lyricat/go-boilerplate/handler/render"
-	"github.com/lyricat/go-boilerplate/store/wallet"
 )
 
-func GetAsset(store *wallet.WalletStore) http.HandlerFunc {
+func GetAsset(store core.WalletStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		assetID := chi.URLParam(r, "assetID")
@@ -26,7 +26,7 @@ func GetAsset(store *wallet.WalletStore) http.HandlerFunc {
 	}
 }
 
-func GetAssets(store *wallet.WalletStore) http.HandlerFunc {
+func GetAssets(store core.WalletStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		assets, err := store.GetAssets(ctx)

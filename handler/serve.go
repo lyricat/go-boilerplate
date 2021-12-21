@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/lyricat/go-boilerplate/core"
 	"github.com/lyricat/go-boilerplate/handler/asset"
 	"github.com/lyricat/go-boilerplate/handler/echo"
 	"github.com/lyricat/go-boilerplate/handler/render"
-	"github.com/lyricat/go-boilerplate/store/wallet"
 
 	"github.com/go-chi/chi"
 )
 
-func New(cfg Config, wallets *wallet.WalletStore) Server {
+func New(cfg Config, wallets core.WalletStore) Server {
 	return Server{cfg: cfg, wallets: wallets}
 }
 
@@ -22,7 +22,7 @@ type (
 
 	Server struct {
 		cfg     Config
-		wallets *wallet.WalletStore
+		wallets core.WalletStore
 	}
 )
 
