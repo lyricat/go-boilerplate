@@ -4,9 +4,11 @@ go 1.17
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
+	github.com/gofrs/uuid v4.1.0+incompatible
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.9.0
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 )
 
 require (
@@ -19,7 +21,6 @@ require (
 	github.com/go-playground/validator/v10 v10.2.0 // indirect
 	github.com/go-resty/resty/v2 v2.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
-	github.com/gofrs/uuid v4.1.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
@@ -40,7 +41,6 @@ require (
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20210510095157-81045d8b478c // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
@@ -71,5 +71,4 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/gorm v1.22.4
 )
