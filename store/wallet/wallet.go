@@ -55,13 +55,13 @@ func (s *WalletStore) GetSnapshots(ctx context.Context, userID string, from time
 	if !from.IsZero() {
 		query = query.Where("created_at < ?", from)
 	}
-	err := query.Order("created_at DESC").Find(&ss).Error
+	err := query.Order("created_at DESC").Find(&ss).Limit(core.DefaultSnapshotFetchCount).Error
 	return ss, err
 }
 
 func (s *WalletStore) GetSnapshot(ctx context.Context, snapshotID string) (core.Snapshot, error) {
 	var ss core.Snapshot
-	err := s.db.View().Where("snapshot_id = ?", snapshotID).Find(&ss).Error
+	err := s.db.View().Where("snapshot_id = ?", snapshotID).First(&ss).Error
 	return ss, err
 }
 
@@ -84,7 +84,7 @@ func (s *WalletStore) GetAssets(ctx context.Context) ([]*core.Asset, error) {
 
 func (s *WalletStore) GetAsset(ctx context.Context, assetID string) (*core.Asset, error) {
 	var asset core.Asset
-	err := s.db.View().Where("asset_id = ?", assetID).Find(&asset).Error
+	err := s.db.View().Where("asset_id = ?", assetID).First(&asset).Error
 	return &asset, err
 }
 

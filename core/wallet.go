@@ -11,6 +11,8 @@ import (
 var (
 	ErrInvalidTrace          = errors.New("invalid trace")
 	ErrInvalidConversationID = errors.New("invalid conversation id")
+
+	DefaultSnapshotFetchCount = 100
 )
 
 type (

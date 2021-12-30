@@ -43,7 +43,6 @@ It enables several widely used functionalities by default:
 ### 5. some handy tips
 
 1. only inject the dependences (store, i18n, etc) you need into the workers or apis
-2. the store methods includes setters/getters and actions, the former are operations to the database, and latter are operations not only related to the database (network request, redis, etc)
 
 ### 6. removing unnecessary functionalities
 
