@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/lyricat/go-boilerplate/core"
-	"github.com/lyricat/go-boilerplate/handler/asset"
-	"github.com/lyricat/go-boilerplate/handler/echo"
-	"github.com/lyricat/go-boilerplate/handler/render"
+	"go-boilerplate/core"
+	"go-boilerplate/handler/asset"
+	"go-boilerplate/handler/echo"
+	"go-boilerplate/handler/render"
 
 	"github.com/go-chi/chi"
 )
 
-func New(cfg Config, wallets core.WalletStore) Server {
-	return Server{cfg: cfg, wallets: wallets}
+func New(cfg Config, assets core.AssetStore) Server {
+	return Server{cfg: cfg, assets: assets}
 }
 
 type (
@@ -21,8 +21,8 @@ type (
 	}
 
 	Server struct {
-		cfg     Config
-		wallets core.WalletStore
+		cfg    Config
+		assets core.AssetStore
 	}
 )
 
@@ -40,8 +40,8 @@ func (s Server) HandleRest() http.Handler {
 	})
 
 	r.Route("/assets", func(r chi.Router) {
-		r.Get("/", asset.GetAssets(s.wallets))
-		r.Get("/{assetID}", asset.GetAsset(s.wallets))
+		r.Get("/", asset.GetAssets(s.assets))
+		r.Get("/{assetID}", asset.GetAsset(s.assets))
 	})
 
 	return r

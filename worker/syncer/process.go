@@ -3,8 +3,9 @@ package syncer
 import (
 	"context"
 
+	"go-boilerplate/core"
+
 	"github.com/fox-one/pkg/logger"
-	"github.com/lyricat/go-boilerplate/core"
 )
 
 func (w *Worker) ProcessSnapshots(ctx context.Context, snapshots []*core.Snapshot) error {
@@ -28,7 +29,7 @@ func (w *Worker) ProcessSnapshot(ctx context.Context, snapshot *core.Snapshot) e
 }
 
 func (w *Worker) PersistentSnapshot(ctx context.Context, snapshot *core.Snapshot) (err error) {
-	if err := w.wallets.SetSnapshots(ctx, []*core.Snapshot{snapshot}); err != nil {
+	if err := w.snapshots.SetSnapshots(ctx, []*core.Snapshot{snapshot}); err != nil {
 		return err
 	}
 	return nil

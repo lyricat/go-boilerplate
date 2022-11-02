@@ -1,8 +1,5 @@
 db:
-  database: "main"
-  dialect: "sqlite3"
-  host: "./database.db"
-  password: "PASSWORD"
-  port: 3306
-  read_host: ""
-  user: "USER"
+  # driver: "sqlite3"
+  # datasource: "database.db"
+  driver: "postgres"
+  datasource: "user=foo dbname=bar host=localhost password=foobar sslmode=disable"

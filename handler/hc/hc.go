@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"go-boilerplate/handler/render"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/lyricat/go-boilerplate/handler/render"
 )
 
 func Handle(version string) http.Handler {

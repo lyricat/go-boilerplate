@@ -2,21 +2,25 @@ package worker
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
+
+	"go-boilerplate/config"
+	"go-boilerplate/handler/hc"
+	snapsz "go-boilerplate/service/snapshot"
+	"go-boilerplate/session"
+	"go-boilerplate/store/property"
+	"go-boilerplate/store/snapshot"
+	"go-boilerplate/worker"
+	"go-boilerplate/worker/messenger"
+	"go-boilerplate/worker/syncer"
 
 	"github.com/fox-one/pkg/logger"
-	"github.com/fox-one/pkg/store/db"
-	propertystore "github.com/fox-one/pkg/store/property"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/lyricat/go-boilerplate/config"
-	"github.com/lyricat/go-boilerplate/handler/hc"
-	"github.com/lyricat/go-boilerplate/session"
-	"github.com/lyricat/go-boilerplate/store/wallet"
-	"github.com/lyricat/go-boilerplate/worker"
-	"github.com/lyricat/go-boilerplate/worker/messenger"
-	"github.com/lyricat/go-boilerplate/worker/syncer"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
 
@@ -32,10 +36,15 @@ func NewCmdWorker() *cobra.Command {
 			ctx := cmd.Context()
 			s := session.From(ctx)
 
-			database := db.MustOpen(config.C().DB)
-			defer database.Close()
+			conn, err := sqlx.Connect(config.C().DB.Driver, config.C().DB.Datasource)
+			if err != nil {
+				log.Fatalln("connect to database failed", err)
+			}
+			conn.SetMaxIdleConns(20)
+			conn.SetConnMaxLifetime(time.Hour)
+			defer conn.Close()
 
-			property := propertystore.New(database)
+			propertys := property.New(conn)
 
 			keystore, err := s.GetKeystore()
 			if err != nil {
@@ -47,18 +56,14 @@ func NewCmdWorker() *cobra.Command {
 				return err
 			}
 
-			pin, err := s.GetPin()
-			if err != nil {
-				return err
-			}
-
-			wallets := wallet.New(database, client, wallet.Config{Pin: pin})
+			snapshots := snapshot.New(conn)
+			snapshotz := snapsz.New(client)
 
 			workers := []worker.Worker{
 				// syncer
 				syncer.New(syncer.Config{
 					ClientID: keystore.ClientID,
-				}, property, wallets),
+				}, propertys, snapshots, snapshotz),
 				// messenger
 				messenger.New(client),
 			}

@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"time"
 
+	"go-boilerplate/message"
+
 	"github.com/fox-one/mixin-sdk-go"
 	"github.com/fox-one/pkg/logger"
 	"github.com/gofrs/uuid"
-	"github.com/lyricat/go-boilerplate/message"
 )
 
 type (

@@ -1,20 +1,21 @@
 package asset
 
 import (
+	"database/sql"
 	"net/http"
 
-	"github.com/fox-one/pkg/store/db"
+	"go-boilerplate/core"
+	"go-boilerplate/handler/render"
+
 	"github.com/go-chi/chi"
-	"github.com/lyricat/go-boilerplate/core"
-	"github.com/lyricat/go-boilerplate/handler/render"
 )
 
-func GetAsset(store core.WalletStore) http.HandlerFunc {
+func GetAsset(store core.AssetStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		assetID := chi.URLParam(r, "assetID")
 		asset, err := store.GetAsset(ctx, assetID)
-		if err == db.ErrRecordNotFound {
+		if err == sql.ErrNoRows {
 			render.Error(w, http.StatusNotFound, err)
 			return
 		}
@@ -26,7 +27,7 @@ func GetAsset(store core.WalletStore) http.HandlerFunc {
 	}
 }
 
-func GetAssets(store core.WalletStore) http.HandlerFunc {
+func GetAssets(store core.AssetStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		assets, err := store.GetAssets(ctx)

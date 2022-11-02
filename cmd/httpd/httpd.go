@@ -3,19 +3,20 @@ package httpd
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"go-boilerplate/config"
+	"go-boilerplate/handler"
+	"go-boilerplate/handler/hc"
+	"go-boilerplate/store/asset"
+
 	"github.com/fox-one/pkg/logger"
-	"github.com/fox-one/pkg/store/db"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/lyricat/go-boilerplate/config"
-	"github.com/lyricat/go-boilerplate/handler"
-	"github.com/lyricat/go-boilerplate/handler/hc"
-	"github.com/lyricat/go-boilerplate/session"
-	"github.com/lyricat/go-boilerplate/store/wallet"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/cors"
 
 	"github.com/drone/signal"
@@ -30,22 +31,22 @@ func NewCmdHttpd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 			ctx := cmd.Context()
-			s := session.From(ctx)
 
-			database := db.MustOpen(config.C().DB)
-			defer database.Close()
-
-			client, err := s.GetClient()
+			conn, err := sqlx.Connect(config.C().DB.Driver, config.C().DB.Datasource)
 			if err != nil {
-				return err
+				log.Fatalln("connect to database failed", err)
 			}
+			conn.SetMaxIdleConns(2)
 
-			pin, err := s.GetPin()
-			if err != nil {
-				return err
-			}
+			defer conn.Close()
 
-			wallets := wallet.New(database, client, wallet.Config{Pin: pin})
+			// s := session.From(ctx)
+			// client, err := s.GetClient()
+			// if err != nil {
+			// 	return err
+			// }
+
+			assets := asset.New(conn)
 
 			mux := chi.NewMux()
 			mux.Use(middleware.Recoverer)
@@ -70,7 +71,7 @@ func NewCmdHttpd() *cobra.Command {
 			// rpc & api
 			{
 				cfg := handler.Config{}
-				svr := handler.New(cfg, wallets)
+				svr := handler.New(cfg, assets)
 				// api v1
 				restHandler := svr.HandleRest()
 				mux.Mount("/api", restHandler)

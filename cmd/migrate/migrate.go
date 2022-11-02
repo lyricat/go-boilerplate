@@ -1,8 +1,11 @@
 package migrate
 
 import (
-	"github.com/fox-one/pkg/store/db"
-	"github.com/lyricat/go-boilerplate/config"
+	"go-boilerplate/config"
+	"go-boilerplate/store/db"
+	"log"
+
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
 
@@ -12,12 +15,15 @@ func NewCmdMigrate() *cobra.Command {
 		Aliases: []string{"setdb"},
 		Short:   "migrate database tables",
 		Run: func(cmd *cobra.Command, args []string) {
-			database := db.MustOpen(config.C().DB)
-			cmd.Println(config.C().DB)
-			defer database.Close()
 
-			if err := db.Migrate(database); err != nil {
-				cmd.PrintErrln("migrate tables", err)
+			conn, err := sqlx.Connect(config.C().DB.Driver, config.C().DB.Datasource)
+			if err != nil {
+				log.Fatalln("connect to database failed", err)
+			}
+			defer conn.Close()
+
+			if err := db.Migrate(conn.DB); err != nil {
+				cmd.PrintErrln("migrate tables failed: ", err)
 				return
 			}
 			cmd.Println("migrate done")

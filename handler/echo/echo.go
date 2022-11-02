@@ -3,9 +3,10 @@ package echo
 import (
 	"net/http"
 
+	"go-boilerplate/handler/render"
+
 	"github.com/fox-one/pkg/httputil/param"
 	"github.com/go-chi/chi"
-	"github.com/lyricat/go-boilerplate/handler/render"
 )
 
 func Post() http.HandlerFunc {

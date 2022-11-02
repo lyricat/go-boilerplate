@@ -1,14 +1,23 @@
-package wallet
+package snapshot
 
 import (
 	"context"
 	"time"
 
+	"go-boilerplate/core"
+
 	"github.com/fox-one/mixin-sdk-go"
-	core "github.com/lyricat/go-boilerplate/core"
 )
 
-func (s *WalletStore) PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*core.Snapshot, error) {
+func New(client *mixin.Client) *snapshotService {
+	return &snapshotService{client: client}
+}
+
+type snapshotService struct {
+	client *mixin.Client
+}
+
+func (s *snapshotService) PollSnapshots(ctx context.Context, offset time.Time, limit int) ([]*core.Snapshot, error) {
 	snapshots, err := s.client.ReadNetworkSnapshots(ctx, "", offset, "ASC", limit)
 	if err != nil {
 		return nil, err

@@ -22,9 +22,17 @@ func Text(w http.ResponseWriter, t string) {
 }
 
 func Error(w http.ResponseWriter, status int, err error) {
-	w.Header().Set("Content-Type", "application/text")
-	w.WriteHeader(status)
-	_, _ = w.Write([]byte(err.Error()))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	enc := json.NewEncoder(w)
+	msg := "Unknown"
+	if err != nil {
+		msg = err.Error()
+	}
+	_ = enc.Encode(map[string]interface{}{
+		"code": status,
+		"msg":  msg,
+	})
 }
 
 func Html(w http.ResponseWriter, t string) {

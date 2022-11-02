@@ -1,0 +1,21 @@
+package property
+
+import (
+	"go-boilerplate/core"
+	"go-boilerplate/store/db"
+)
+
+func scanRow(scanner db.Scanner, pp *core.Property) error {
+	if scanner.Next() {
+		if err := scanner.Scan(
+			&pp.Key,
+			&pp.Value,
+			&pp.UpdatedAt,
+		); err != nil {
+			return err
+		}
+	}
+	defer scanner.Close()
+
+	return nil
+}

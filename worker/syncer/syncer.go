@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"go-boilerplate/core"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/fox-one/pkg/logger"
-	"github.com/fox-one/pkg/property"
-	"github.com/lyricat/go-boilerplate/core"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -24,27 +24,30 @@ type (
 	}
 
 	Worker struct {
-		cfg        Config
-		properties property.Store
-		wallets    core.WalletStore
-		cache      *cache.Cache
+		cfg       Config
+		propertys core.PropertyStore
+		snapshots core.SnapshotStore
+		snapshotz core.SnapshotService
+		cache     *cache.Cache
 	}
 )
 
 func New(
 	cfg Config,
-	properties property.Store,
-	wallets core.WalletStore,
+	propertys core.PropertyStore,
+	snapshots core.SnapshotStore,
+	snapshotz core.SnapshotService,
 ) *Worker {
 	if _, err := govalidator.ValidateStruct(cfg); err != nil {
 		panic(err)
 	}
 
 	return &Worker{
-		cfg:        cfg,
-		properties: properties,
-		wallets:    wallets,
-		cache:      cache.New(time.Hour, time.Hour),
+		cfg:       cfg,
+		propertys: propertys,
+		snapshots: snapshots,
+		snapshotz: snapshotz,
+		cache:     cache.New(time.Hour, time.Hour),
 	}
 }
 
@@ -70,7 +73,7 @@ func (w *Worker) Run(ctx context.Context) error {
 func (w *Worker) run(ctx context.Context) error {
 	log := logger.FromContext(ctx)
 
-	v, err := w.properties.Get(ctx, snapshotCheckpoint)
+	v, err := w.propertys.Get(ctx, snapshotCheckpoint)
 	if err != nil {
 		log.WithError(err).Errorln("properties.Get")
 		return err
@@ -85,7 +88,7 @@ func (w *Worker) run(ctx context.Context) error {
 	var snapshots []*core.Snapshot
 
 	{
-		items, err := w.wallets.PollSnapshots(ctx, offset, LIMIT)
+		items, err := w.snapshotz.PollSnapshots(ctx, offset, LIMIT)
 		if err != nil {
 			log.WithError(err).Errorln("list snapshots")
 			return err
@@ -98,7 +101,7 @@ func (w *Worker) run(ctx context.Context) error {
 				continue
 			}
 			// change your condition here
-			if snapshot.OpponentID == w.cfg.ClientID || snapshot.UserID == w.cfg.ClientID {
+			if snapshot.UserID == w.cfg.ClientID {
 				snapshots = append(snapshots, snapshot)
 			}
 		}
@@ -113,9 +116,11 @@ func (w *Worker) run(ctx context.Context) error {
 		w.cache.SetDefault(fmt.Sprintf(snapshotKey, snapshot.SnapshotID), true)
 	}
 
-	if err := w.properties.Save(ctx, snapshotCheckpoint, newOffset); err != nil {
-		log.WithError(err).Errorln("properties.Save")
-		return err
+	if newOffset.After(offset) {
+		if err := w.propertys.Set(ctx, snapshotCheckpoint, newOffset.Format(time.RFC3339Nano)); err != nil {
+			log.WithError(err).Errorln("properties.Set")
+			return err
+		}
 	}
 	return nil
 }

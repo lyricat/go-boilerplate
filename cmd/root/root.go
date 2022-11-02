@@ -5,15 +5,16 @@ import (
 	"net/url"
 	"os"
 
+	"go-boilerplate/cmd/echo"
+	"go-boilerplate/cmd/httpd"
+	"go-boilerplate/cmd/migrate"
+	"go-boilerplate/cmd/worker"
+	"go-boilerplate/cmdutil"
+	"go-boilerplate/config"
+	"go-boilerplate/session"
+
 	"github.com/fox-one/mixin-sdk-go"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/lyricat/go-boilerplate/cmd/echo"
-	"github.com/lyricat/go-boilerplate/cmd/httpd"
-	"github.com/lyricat/go-boilerplate/cmd/migrate"
-	"github.com/lyricat/go-boilerplate/cmd/worker"
-	"github.com/lyricat/go-boilerplate/cmdutil"
-	"github.com/lyricat/go-boilerplate/config"
-	"github.com/lyricat/go-boilerplate/session"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
