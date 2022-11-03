@@ -6,6 +6,8 @@ import (
 )
 
 func scanRow(scanner db.Scanner, output *core.Asset) error {
+	defer scanner.Close()
+
 	if scanner.Next() {
 		if err := scanner.StructScan(
 			output,
@@ -13,21 +15,21 @@ func scanRow(scanner db.Scanner, output *core.Asset) error {
 			return err
 		}
 	}
-	defer scanner.Close()
 
 	return nil
 }
 
-func scanRows(scanner db.Scanner, outputs []*core.Asset) error {
+func scanRows(scanner db.Scanner) ([]*core.Asset, error) {
+	defer scanner.Close()
+	outputs := make([]*core.Asset, 0)
 	for scanner.Next() {
 		output := &core.Asset{}
 		err := scanner.StructScan(output)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		outputs = append(outputs, output)
 	}
-	defer scanner.Close()
 
-	return nil
+	return outputs, nil
 }

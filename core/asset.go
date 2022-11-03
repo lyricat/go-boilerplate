@@ -9,18 +9,25 @@ import (
 
 type (
 	Asset struct {
-		AssetID   string          `json:"asset_id"`
-		Name      string          `json:"name"`
-		ChainID   string          `json:"chain_id"`
-		PriceUSD  decimal.Decimal `json:"price_usd"`
-		Symbol    string          `json:"symbol"`
-		IconURL   string          `json:"icon_url"`
-		UpdatedAt time.Time       `json:"updated_at"`
+		AssetID   string          `db:"asset_id" json:"asset_id"`
+		Name      string          `db:"name" json:"name"`
+		ChainID   string          `db:"chain_id" json:"chain_id"`
+		PriceUSD  decimal.Decimal `db:"price_usd" json:"price_usd"`
+		Symbol    string          `db:"symbol" json:"symbol"`
+		IconURL   string          `db:"icon_url" json:"icon_url"`
+		Order     int64           `db:"order" json:"order"`
+		CreatedAt *time.Time      `db:"created_at" json:"created_at"`
+		UpdatedAt *time.Time      `db:"updated_at" json:"updated_at"`
+		DeletedAt *time.Time      `db:"deleted_at" json:"-"`
 	}
 
 	AssetStore interface {
 		GetAssets(ctx context.Context) ([]*Asset, error)
 		GetAsset(ctx context.Context, assetID string) (*Asset, error)
 		SetAssets(ctx context.Context, assets []*Asset) error
+	}
+
+	AssetService interface {
+		UpdateAssets(ctx context.Context) error
 	}
 )

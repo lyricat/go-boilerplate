@@ -19,20 +19,13 @@ type store struct {
 }
 
 func (s *store) GetAssets(ctx context.Context) ([]*core.Asset, error) {
-	query, args, err := s.db.BindNamed(stmtGetAll, map[string]interface{}{})
-
+	rows, err := s.db.QueryxContext(ctx, stmtGetAll, nil...)
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := s.db.QueryxContext(ctx, query, args...)
+	as, err := scanRows(rows)
 	if err != nil {
-		return nil, err
-	}
-
-	as := []*core.Asset{}
-
-	if err := scanRows(rows, as); err != nil {
 		return nil, err
 	}
 
@@ -68,10 +61,10 @@ func (s *store) SetAssets(ctx context.Context, assets []*core.Asset) error {
 	for _, asset := range assets {
 		query, args, err := s.db.BindNamed(stmtUpdate, map[string]interface{}{
 			"name":      asset.Name,
-			"symbol":    asset.Name,
-			"icon_url":  asset.Name,
-			"chain_id":  asset.Name,
-			"price_usd": asset.Name,
+			"symbol":    asset.Symbol,
+			"icon_url":  asset.IconURL,
+			"chain_id":  asset.ChainID,
+			"price_usd": asset.PriceUSD,
 			"asset_id":  asset.AssetID,
 		})
 
@@ -79,7 +72,7 @@ func (s *store) SetAssets(ctx context.Context, assets []*core.Asset) error {
 			return err
 		}
 
-		tx.MustExecContext(ctx, query, args)
+		tx.MustExecContext(ctx, query, args...)
 	}
 
 	if err := tx.Commit(); err != nil {

@@ -36,9 +36,8 @@ func (s *snapshotStore) GetSnapshots(ctx context.Context, from time.Time, limit 
 		return nil, err
 	}
 
-	snaps := []*core.Snapshot{}
-
-	if err := scanRows(rows, snaps); err != nil {
+	snaps, err := scanRows(rows)
+	if err != nil {
 		return nil, err
 	}
 

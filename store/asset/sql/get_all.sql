@@ -1,3 +1,3 @@
 SELECT
   *
-from assets;
+FROM assets;

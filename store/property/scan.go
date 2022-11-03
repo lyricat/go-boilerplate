@@ -6,6 +6,8 @@ import (
 )
 
 func scanRow(scanner db.Scanner, pp *core.Property) error {
+	defer scanner.Close()
+
 	if scanner.Next() {
 		if err := scanner.Scan(
 			&pp.Key,
@@ -15,7 +17,6 @@ func scanRow(scanner db.Scanner, pp *core.Property) error {
 			return err
 		}
 	}
-	defer scanner.Close()
 
 	return nil
 }

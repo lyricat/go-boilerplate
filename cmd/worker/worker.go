@@ -9,13 +9,16 @@ import (
 
 	"go-boilerplate/config"
 	"go-boilerplate/handler/hc"
+	asz "go-boilerplate/service/asset"
 	snapsz "go-boilerplate/service/snapshot"
 	"go-boilerplate/session"
+	"go-boilerplate/store/asset"
 	"go-boilerplate/store/property"
 	"go-boilerplate/store/snapshot"
 	"go-boilerplate/worker"
 	"go-boilerplate/worker/messenger"
 	"go-boilerplate/worker/syncer"
+	"go-boilerplate/worker/timer"
 
 	"github.com/fox-one/pkg/logger"
 	"github.com/go-chi/chi"
@@ -56,7 +59,9 @@ func NewCmdWorker() *cobra.Command {
 				return err
 			}
 
+			assets := asset.New(conn)
 			snapshots := snapshot.New(conn)
+			assetz := asz.New(client, assets)
 			snapshotz := snapsz.New(client)
 
 			workers := []worker.Worker{
@@ -64,8 +69,12 @@ func NewCmdWorker() *cobra.Command {
 				syncer.New(syncer.Config{
 					ClientID: keystore.ClientID,
 				}, propertys, snapshots, snapshotz),
+
 				// messenger
 				messenger.New(client),
+
+				// timer
+				timer.New(timer.Config{}, propertys, assetz),
 			}
 
 			// run them all
